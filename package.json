@@ -1,0 +1,45 @@
+{
+  "name": "world-cup-kits",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/lcarlo23/world-cup-kits#readme",
+  "bugs": {
+    "url": "https://github.com/lcarlo23/world-cup-kits/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lcarlo23/world-cup-kits.git"
+  },
+  "license": "ISC",
+  "author": "Luca Carlo, Tlokotsi Foulo",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon --env-file=.env server.js",
+    "start": "node server.js",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "swagger": "node swagger.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "mongodb": "^7.2.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.3",
+    "swagger-autogen": "^2.23.7"
+  }
+}
