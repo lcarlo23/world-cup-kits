@@ -87,8 +87,8 @@ export function userValidationRules() {
       .trim()
       .notEmpty()
       .withMessage('Provider is required')
-      .isIn(['google', 'github'])
-      .withMessage('Provider must be either "google" or "github"'),
+      .equals('github')
+      .withMessage('Provider must be "github"'),
 
     body('providerId')
       .trim()
