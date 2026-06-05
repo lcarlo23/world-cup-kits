@@ -9,10 +9,6 @@
   "basePath": "/",
   "tags": [
     {
-      "name": "Authentication",
-      "description": "Endpoints for OAuth login and session management"
-    },
-    {
       "name": "Products",
       "description": "Operations related to product inventory"
     },
@@ -31,43 +27,6 @@
     }
   },
   "paths": {
-    "/": {
-      "get": {
-        "tags": ["Authentication"],
-        "description": "Root endpoint, verifies if the API is running.",
-        "responses": {
-          "200": { "description": "OK - API is running" }
-        }
-      }
-    },
-    "/login": {
-      "get": {
-        "tags": ["Authentication"],
-        "description": "Initiates the GitHub OAuth login process.",
-        "responses": {
-          "200": { "description": "Redirects to GitHub authorization page" }
-        }
-      }
-    },
-    "/github/callback": {
-      "get": {
-        "tags": ["Authentication"],
-        "description": "Callback URL for GitHub OAuth. Handles the login response.",
-        "responses": {
-          "200": { "description": "Successfully authenticated" },
-          "401": { "description": "Authentication failed" }
-        }
-      }
-    },
-    "/logout": {
-      "get": {
-        "tags": ["Authentication"],
-        "description": "Logs out the current user and clears the session.",
-        "responses": {
-          "200": { "description": "Successfully logged out" }
-        }
-      }
-    },
     "/products/": {
       "get": {
         "tags": ["Products"],
