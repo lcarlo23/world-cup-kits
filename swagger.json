@@ -27,7 +27,7 @@
     }
   },
   "paths": {
-    "/products/": {
+    "/products": {
       "get": {
         "tags": ["Products"],
         "description": "Retrieves an array containing all products available in the shop.",
