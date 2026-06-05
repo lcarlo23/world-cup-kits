@@ -5,7 +5,7 @@
     "description": "API documentation for the World Cup Kits e-commerce shop (Final Project). It manages products, users, orders, and reviews.",
     "version": "1.0.0"
   },
-  "host": "world-cup-kits-wi9b.onrender.com/",
+  "host": "world-cup-kits-wi9b.onrender.com",
   "basePath": "/",
   "tags": [
     {
