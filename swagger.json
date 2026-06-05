@@ -1,0 +1,346 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "World Cup Kits API",
+    "description": "API documentation for the World Cup Kits e-commerce shop (Final Project). It manages products, users, orders, and reviews.",
+    "version": "1.0.0"
+  },
+  "host": "",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Endpoints for OAuth login and session management"
+    },
+    {
+      "name": "Products",
+      "description": "Operations related to product inventory"
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to user profiles"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "github_auth": {
+      "type": "oauth2",
+      "authorizationUrl": "/login",
+      "flow": "implicit",
+      "scopes": {}
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Root endpoint, verifies if the API is running.",
+        "responses": {
+          "200": { "description": "OK - API is running" }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Initiates the GitHub OAuth login process.",
+        "responses": {
+          "200": { "description": "Redirects to GitHub authorization page" }
+        }
+      }
+    },
+    "/github/callback": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Callback URL for GitHub OAuth. Handles the login response.",
+        "responses": {
+          "200": { "description": "Successfully authenticated" },
+          "401": { "description": "Authentication failed" }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": ["Authentication"],
+        "description": "Logs out the current user and clears the session.",
+        "responses": {
+          "200": { "description": "Successfully logged out" }
+        }
+      }
+    },
+    "/products/": {
+      "get": {
+        "tags": ["Products"],
+        "description": "Retrieves an array containing all products available in the shop.",
+        "responses": {
+          "200": { "description": "A list of products successfully retrieved." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "post": {
+        "tags": ["Products"],
+        "description": "Creates a new product record. Only admins can perform this action.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Product" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Product Created successfully." },
+          "400": { "description": "Bad Request - Validation failed." },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Products"],
+        "description": "Retrieves a single product by its MongoDB ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Product found and returned." },
+          "400": { "description": "Bad Request - Invalid ID format." },
+          "404": { "description": "Product Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "put": {
+        "tags": ["Products"],
+        "description": "Updates an existing product by its ID.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Product" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Product successfully updated (No Content returned)." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Product Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "delete": {
+        "tags": ["Products"],
+        "description": "Deletes a product by its ID.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Product successfully deleted." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Product Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    },
+    "/users/": {
+      "get": {
+        "tags": ["Users"],
+        "description": "Retrieves a list of all registered users.",
+        "security": [{ "github_auth": [] }],
+        "responses": {
+          "200": { "description": "Users successfully retrieved." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "description": "Registers a new user into the system.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/User" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "User Created." },
+          "400": { "description": "Bad Request - Validation failed." },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "description": "Retrieves a single user profile.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "User found." },
+          "400": { "description": "Bad Request." },
+          "404": { "description": "User Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "description": "Updates a user profile.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/User" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "User successfully updated." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "User Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "description": "Deletes a user profile.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": { "description": "User successfully deleted." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "User Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Product": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "price",
+        "stock",
+        "team",
+        "year",
+        "sizes"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Italy 2006 Home Kit"
+        },
+        "description": {
+          "type": "string",
+          "example": "The iconic blue jersey worn by Italy during their victorious 2006 World Cup campaign."
+        },
+        "price": {
+          "type": "number",
+          "example": 89.99
+        },
+        "stock": {
+          "type": "integer",
+          "example": 15
+        },
+        "team": {
+          "type": "string",
+          "example": "Italy"
+        },
+        "year": {
+          "type": "integer",
+          "example": 2006
+        },
+        "sizes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": ["S", "M", "L", "XL"]
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "role",
+        "provider",
+        "providerId"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Luca Carlo"
+        },
+        "email": {
+          "type": "string",
+          "example": "luca.carlo@example.com"
+        },
+        "role": {
+          "type": "string",
+          "example": "admin"
+        },
+        "provider": {
+          "type": "string",
+          "example": "github"
+        },
+        "providerId": {
+          "type": "string",
+          "example": "git_987654321"
+        }
+      }
+    }
+  }
+}
