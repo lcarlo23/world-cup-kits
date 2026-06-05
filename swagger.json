@@ -5,7 +5,7 @@
     "description": "API documentation for the World Cup Kits e-commerce shop (Final Project). It manages products, users, orders, and reviews.",
     "version": "1.0.0"
   },
-  "host": "",
+  "host": "world-cup-kits-wi9b.onrender.com/",
   "basePath": "/",
   "tags": [
     {
@@ -17,7 +17,7 @@
       "description": "Operations related to user profiles"
     }
   ],
-  "schemes": ["http", "https"],
+  "schemes": ["https"],
   "securityDefinitions": {
     "github_auth": {
       "type": "oauth2",
