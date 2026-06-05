@@ -41,10 +41,7 @@ export function productValidationRules() {
       .isInt({ min: 0 })
       .withMessage('Stock must be an integer of 0 or greater'),
 
-    body('team')
-      .trim()
-      .notEmpty()
-      .withMessage('Team name is required'),
+    body('team').trim().notEmpty().withMessage('Team name is required'),
 
     body('year')
       .notEmpty()
@@ -56,7 +53,9 @@ export function productValidationRules() {
       .notEmpty()
       .withMessage('Sizes are required')
       .isArray({ min: 1 })
-      .withMessage('Sizes must be an array with at least one element (e.g., ["S", "M", "L"])')
+      .withMessage(
+        'Sizes must be an array with at least one element (e.g., ["S", "M", "L"])',
+      ),
   ];
 }
 
@@ -90,9 +89,6 @@ export function userValidationRules() {
       .equals('github')
       .withMessage('Provider must be "github"'),
 
-    body('providerId')
-      .trim()
-      .notEmpty()
-      .withMessage('Provider ID is required')
+    body('providerId').trim().notEmpty().withMessage('Provider ID is required'),
   ];
 }
