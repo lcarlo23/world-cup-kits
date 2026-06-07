@@ -15,6 +15,10 @@
     {
       "name": "Users",
       "description": "Operations related to user profiles"
+    },
+    {
+      "name": "Orders",
+      "description": "Operations related to orders"
     }
   ],
   "schemes": ["https"],
@@ -224,6 +228,73 @@
       }
     }
   },
+      "/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "description": "Retrieves a single order.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order found." },
+          "400": { "description": "Bad Request." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "put": {
+        "tags": ["Orders"],
+        "description": "Updates an order details or status.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Order" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Order successfully updated." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "delete": {
+        "tags": ["Orders"],
+        "description": "Deletes an order record.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Order successfully deleted." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    },
   "definitions": {
     "Product": {
       "type": "object",
