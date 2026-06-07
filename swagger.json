@@ -226,9 +226,8 @@
           "500": { "description": "Internal Server Error." }
         }
       }
-    }
-  },
-      "/orders/{id}": {
+    },
+    "/orders/{id}": {
       "get": {
         "tags": ["Orders"],
         "description": "Retrieves a single order.",
@@ -294,7 +293,8 @@
           "500": { "description": "Internal Server Error." }
         }
       }
-    },
+    }
+  },
   "definitions": {
     "Product": {
       "type": "object",
