@@ -93,7 +93,7 @@ export async function updateOrder(req, res) {
 }
 
 
-export async function deleteProduct(req, res) {
+export async function deleteOrder(req, res) {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: 'Invalid ID format.' });
@@ -101,13 +101,13 @@ export async function deleteProduct(req, res) {
 
     const db = getDb();
     const response = await db
-      .collection('products')
+      .collection('orders')
       .deleteOne({ _id: new ObjectId(req.params.id) });
 
     if (response.deletedCount > 0) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Product not found.' });
+      res.status(404).json({ message: 'Order not found.' });
     }
   } catch (error) {
     res.status(500).send(error.message);
