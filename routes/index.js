@@ -1,6 +1,7 @@
 import express from 'express';
 import productsRoute from './products.js';
 import usersRoute from './users.js';
+import ordersRoute from './orders.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json' with { type: 'json' };
 import passport from 'passport';
@@ -13,6 +14,7 @@ const swaggerOptions = {
 
 router.use('/products', productsRoute);
 router.use('/users', usersRoute);
+router.use('/users', ordersRoute);
 router.use(
   '/api-docs',
   swaggerUi.serve,
