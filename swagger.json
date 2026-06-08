@@ -397,6 +397,57 @@
           "example": "git_987654321"
         }
       }
+    },
+    "Order": {
+      "type": "object",
+      "required": ["id", "customerName", "totalPrice", "items"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "ORD001"
+        },
+        "customerName": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "totalPrice": {
+          "type": "number",
+          "example": 90
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["team", "size", "jerseyName", "number", "price", "quantity"],
+            "properties": {
+              "team": {
+                "type": "string",
+                "example": "Arsenal"
+              },
+              "size": {
+                "type": "string",
+                "example": "L"
+              },
+              "jerseyName": {
+                "type": "string",
+                "example": "Saka"
+              },
+              "number": {
+                "type": "integer",
+                "example": 7
+              },
+              "price": {
+                "type": "number",
+                "example": 90
+              },
+              "quantity": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
