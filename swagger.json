@@ -402,10 +402,6 @@
       "type": "object",
       "required": ["id", "customerName", "totalPrice", "items"],
       "properties": {
-        "id": {
-          "type": "string",
-          "example": "ORD001"
-        },
         "customerName": {
           "type": "string",
           "example": "John Doe"

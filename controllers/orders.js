@@ -38,7 +38,6 @@ export async function createOrder(req, res) {
     const db = getDb();
 
     const newOrder = {
-      _id: req.body.id,
       customerName: req.body.customerName,
       orderDate: new Date().toISOString().split('T')[0],
       status: "Pending",
