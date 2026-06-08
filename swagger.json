@@ -412,7 +412,7 @@
         },
         "totalPrice": {
           "type": "number",
-          "example": 90
+          "example": 89.99
         },
         "items": {
           "type": "array",
@@ -422,7 +422,7 @@
             "properties": {
               "team": {
                 "type": "string",
-                "example": "Arsenal"
+                "example": "Italy"
               },
               "size": {
                 "type": "string",
@@ -430,15 +430,15 @@
               },
               "jerseyName": {
                 "type": "string",
-                "example": "Saka"
+                "example": "Gianluigi Buffon"
               },
               "number": {
                 "type": "integer",
-                "example": 7
+                "example": 12
               },
               "price": {
                 "type": "number",
-                "example": 90
+                "example": 89.99
               },
               "quantity": {
                 "type": "integer",
