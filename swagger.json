@@ -398,7 +398,7 @@
         }
       }
     },
-    "Order": {
+        "Order": {
       "type": "object",
       "required": ["id", "customerName", "totalPrice", "items"],
       "properties": {
@@ -449,5 +449,6 @@
         }
       }
     }
+
   }
 }
