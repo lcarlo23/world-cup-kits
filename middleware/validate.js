@@ -92,3 +92,65 @@ export function userValidationRules() {
     body('providerId').trim().notEmpty().withMessage('Provider ID is required'),
   ];
 }
+
+export function orderValidationRules() {
+  return [
+    body('customerName')
+      .trim()
+      .notEmpty()
+      .withMessage('Customer name is required')
+      .isLength({ min: 2 })
+      .withMessage('Customer name must be at least 2 characters long'),
+
+    body('status')
+      .optional()
+      .trim()
+      .isIn(['Pending', 'Processing', 'Shipped', 'Cancelled'])
+      .withMessage('Invalid order status value'),
+
+    body('totalPrice')
+      .notEmpty()
+      .withMessage('Total price is required')
+      .isFloat({ min: 0 })
+      .withMessage('Total price must be a positive number'),
+
+    body('items')
+      .notEmpty()
+      .withMessage('Order items are required')
+      .isArray({ min: 1 })
+      .withMessage('Items must be an array with at least one element'),
+
+    body('items.*.team')
+      .trim()
+      .notEmpty()
+      .withMessage('Team name is required'),
+
+    body('items.*.size')
+      .trim()
+      .notEmpty()
+      .withMessage('Size is required'),
+
+    body('items.*.jerseyName')
+      .trim()
+      .notEmpty()
+      .withMessage('Jersey player name is required'),
+
+    body('items.*.number')
+      .notEmpty()
+      .withMessage('Jersey number is required')
+      .isInt({ min: 1, max: 99 })
+      .withMessage('Jersey number must be between 1 and 99'),
+
+    body('items.*.price')
+      .notEmpty()
+      .withMessage('Item price is required')
+      .isFloat({ min: 0 })
+      .withMessage('Item price must be a positive number'),
+
+    body('items.*.quantity')
+      .notEmpty()
+      .withMessage('Quantity is required')
+      .isInt({ min: 1 })
+      .withMessage('Quantity must be at least 1')
+  ];
+}

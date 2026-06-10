@@ -15,6 +15,10 @@
     {
       "name": "Users",
       "description": "Operations related to user profiles"
+    },
+    {
+      "name": "Orders",
+      "description": "Operations related to orders"
     }
   ],
   "schemes": ["http", "https"],
@@ -27,7 +31,7 @@
     }
   },
   "paths": {
-    "/products/": {
+    "/products": {
       "get": {
         "tags": ["Products"],
         "description": "Retrieves an array containing all products available in the shop.",
@@ -222,6 +226,104 @@
           "500": { "description": "Internal Server Error." }
         }
       }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Orders"],
+        "description": "Retrieves all soccer kit orders.",
+        "security": [{ "github_auth": [] }],
+        "responses": {
+          "200": { "description": "A list of orders returned successfully." },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "post": {
+        "tags": ["Orders"],
+        "description": "Creates a new soccer kit order.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Order" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Order successfully created." },
+          "400": { "description": "Bad Request - Validation failed." },
+          "401": { "description": "Unauthorized." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "description": "Retrieves a single order by its ID.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order found and returned." },
+          "400": { "description": "Bad Request - Invalid ID format." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "put": {
+        "tags": ["Orders"],
+        "description": "Updates an existing order by its ID.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/Order" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Order successfully updated (No Content returned)." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      },
+      "delete": {
+        "tags": ["Orders"],
+        "description": "Deletes an order by its ID.",
+        "security": [{ "github_auth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": { "description": "Order successfully deleted." },
+          "400": { "description": "Bad Request." },
+          "401": { "description": "Unauthorized." },
+          "404": { "description": "Order Not Found." },
+          "500": { "description": "Internal Server Error." }
+        }
+      }
     }
   },
   "definitions": {
@@ -295,6 +397,54 @@
           "example": "git_987654321"
         }
       }
+    },
+        "Order": {
+      "type": "object",
+      "required": ["id", "customerName", "totalPrice", "items"],
+      "properties": {
+        "customerName": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "totalPrice": {
+          "type": "number",
+          "example": 89.99
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["team", "size", "jerseyName", "number", "price", "quantity"],
+            "properties": {
+              "team": {
+                "type": "string",
+                "example": "Italy"
+              },
+              "size": {
+                "type": "string",
+                "example": "L"
+              },
+              "jerseyName": {
+                "type": "string",
+                "example": "Gianluigi Buffon"
+              },
+              "number": {
+                "type": "integer",
+                "example": 12
+              },
+              "price": {
+                "type": "number",
+                "example": 89.99
+              },
+              "quantity": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          }
+        }
+      }
     }
+
   }
 }
