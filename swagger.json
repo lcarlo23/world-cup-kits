@@ -324,8 +324,104 @@
           "500": { "description": "Internal Server Error." }
         }
       }
+    },
+    "/reviews": {
+    "get": {
+      "tags": ["Reviews"],
+      "description": "Retrieves all reviews from the database.",
+      "responses": {
+        "200": { "description": "Success - Returns an array of reviews." },
+        "500": { "description": "Internal Server Error." }
+      }
+    },
+    "post": {
+      "tags": ["Reviews"],
+      "description": "Creates a new standalone product review.",
+      "security": [{ "github_auth": [] }],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "schema": { "$ref": "#/definitions/Review" }
+        }
+      ],
+      "responses": {
+        "201": { "description": "Review created successfully." },
+        "400": { "description": "Bad Request - Validation failed." },
+        "401": { "description": "Unauthorized." },
+        "500": { "description": "Internal Server Error." }
+      }
     }
   },
+  "/reviews/{id}": {
+    "get": {
+      "tags": ["Reviews"],
+      "description": "Retrieves a single review by its ID.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": { "description": "Review found and returned." },
+        "400": { "description": "Bad Request - Invalid ID format." },
+        "404": { "description": "Review Not Found." },
+        "500": { "description": "Internal Server Error." }
+      }
+    },
+    "put": {
+      "tags": ["Reviews"],
+      "description": "Updates an existing review by its ID.",
+      "security": [{ "github_auth": [] }],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "schema": { "$ref": "#/definitions/Review" }
+        }
+      ],
+      "responses": {
+        "204": { "description": "Review successfully updated (No Content returned)." },
+        "200": { "description": "Success - No changes were made to the review." },
+        "400": { "description": "Bad Request - Validation failed." },
+        "401": { "description": "Unauthorized." },
+        "404": { "description": "Review Not Found." },
+        "500": { "description": "Internal Server Error." }
+      }
+    },
+    "delete": {
+      "tags": ["Reviews"],
+      "description": "Deletes a review by its ID.",
+      "security": [{ "github_auth": [] }],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "204": { "description": "Review successfully deleted." },
+        "400": { "description": "Bad Request - Invalid ID format." },
+        "401": { "description": "Unauthorized." },
+        "404": { "description": "Review Not Found." },
+        "500": { "description": "Internal Server Error." }
+      }
+    }
+  }
+},
   "definitions": {
     "Product": {
       "type": "object",
@@ -444,7 +540,32 @@
           }
         }
       }
+    },
+        "Review": {
+      "type": "object",
+      "required": ["productName", "reviewerName", "rating", "comment"],
+      "properties": {
+        "productName": {
+          "type": "string",
+          "example": "Italy Home Jersey 2006"
+        },
+        "reviewerName": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "rating": {
+          "type": "integer",
+          "example": 5
+        },
+        "comment": {
+          "type": "string",
+          "example": "The stitch quality is incredible. Highly recommend!"
+        },
+        "reviewDate": {
+          "type": "string",
+          "example": "2026-06-10"
+        }
+      }
     }
-
   }
 }
