@@ -21,7 +21,7 @@
       "description": "Operations related to orders"
     }
   ],
-  "schemes": ["http", "https"],
+  "schemes": ["https"],
   "securityDefinitions": {
     "github_auth": {
       "type": "oauth2",
