@@ -20,7 +20,8 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "swagger": "node swagger.js"
+    "swagger": "node swagger.js",
+    "test": "jest"
   },
   "dependencies": {
     "body-parser": "^2.2.2",
@@ -35,11 +36,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@shelf/jest-mongodb": "^6.0.2",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.6.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
+    "supertest": "^7.2.2",
     "swagger-autogen": "^2.23.7"
   }
 }
