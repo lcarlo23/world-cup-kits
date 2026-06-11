@@ -5,7 +5,6 @@ export async function getAllReviews(req, res) {
   try {
     const db = getDb();
     const reviews = await db.collection('reviews').find().toArray();
-
     res.status(200).json(reviews);
   } catch (error) {
     res.status(500).send(error.message);
@@ -38,19 +37,20 @@ export async function createReview(req, res) {
     const db = getDb();
 
     const newReview = {
+      userId: req.user._id,
+      reviewerName: req.user.name,
       productName: req.body.productName,
-      reviewerName: req.body.reviewerName,
-      rating: Number(req.body.rating), 
+      rating: Number(req.body.rating),
       comment: req.body.comment,
-      reviewDate: new Date().toISOString().split('T')[0] 
-        };
+      reviewDate: new Date().toISOString(),
+    };
 
     const response = await db.collection('reviews').insertOne(newReview);
 
     if (response.acknowledged) {
-      res.status(201).json({ 
-        message: 'Review created successfully.', 
-        reviewId: response.insertedId 
+      res.status(201).json({
+        message: 'Review added successfully',
+        reviewId: response.insertedId,
       });
     } else {
       res.status(500).json({ message: 'Review creation failed.' });
@@ -70,11 +70,9 @@ export async function updateReview(req, res) {
     const reviewId = req.params.id;
 
     const updatedReview = {
-      productName: req.body.productName,
-      reviewerName: req.body.reviewerName,
       rating: Number(req.body.rating),
       comment: req.body.comment,
-      reviewDate: req.body.reviewDate
+      lastEdited: new Date().toISOString(),
     };
 
     const response = await db
@@ -102,9 +100,11 @@ export async function deleteReview(req, res) {
     }
 
     const db = getDb();
+    const reviewId = req.params.id;
+
     const response = await db
       .collection('reviews')
-      .deleteOne({ _id: new ObjectId(req.params.id) });
+      .deleteOne({ _id: new ObjectId(reviewId) });
 
     if (response.deletedCount > 0) {
       res.status(204).send();
