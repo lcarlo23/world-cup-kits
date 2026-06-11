@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import productsRoute from '../routes/products.js';
 import ordersRoute from '../routes/orders.js';
 import usersRoute from '../routes/users.js';
+import reviewsRoute from '../routes/reviews.js';
 
 import { initDb, getDb, closeDb } from '../db/connect.js';
 
@@ -13,10 +14,12 @@ app.use(express.json());
 app.use('/products', productsRoute);
 app.use('/orders', ordersRoute);
 app.use('/users', usersRoute);
+app.use('/reviews', reviewsRoute);
 
 const productId = new ObjectId();
 const orderId = new ObjectId();
 const userId = new ObjectId();
+const reviewId = new ObjectId();
 
 describe('Get and GetAll Tests', () => {
   beforeAll(async () => {
@@ -41,6 +44,15 @@ describe('Get and GetAll Tests', () => {
       _id: userId,
       name: 'Luigi',
       email: 'luigi@example.com',
+    });
+
+    await db.collection('reviews').insertOne({
+      _id: reviewId,
+      productName: 'Italy Home Jersey 2006',
+      reviewerName: 'John Doe',
+      rating: 5,
+      comment: 'The stitch quality is incredible. Highly recommend!',
+      reviewDate: '2026-06-10',
     });
   });
 
@@ -96,6 +108,24 @@ describe('Get and GetAll Tests', () => {
       const res = await request(app).get(`/users/${userId.toString()}`);
       expect(res.status).toBe(200);
       expect(res.body.name).toBe('Luigi');
+    });
+  });
+
+  // --- TEST REVIEWS ---
+  describe('Reviews Routes', () => {
+    test('GET /reviews - should return all reviews', async () => {
+      const res = await request(app).get('/reviews');
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBeTruthy();
+      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body[0].reviewerName).toBe('John Doe');
+    });
+
+    test('GET /reviews/:id - should return a single review', async () => {
+      const res = await request(app).get(`/reviews/${reviewId.toString()}`);
+      expect(res.status).toBe(200);
+      expect(res.body.reviewerName).toBe('John Doe');
+      expect(res.body.productName).toBe('Italy Home Jersey 2006');
     });
   });
 });
