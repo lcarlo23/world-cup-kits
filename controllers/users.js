@@ -35,18 +35,10 @@ export async function getSingleUser(req, res) {
       });
     }
 
-    let query = { _id: targetUserId };
-
-    if (req.user?.role !== 'admin') {
-      query._id = req.user._id;
-    }
-
-    const user = await db.collection('users').findOne(query);
+    const user = await db.collection('users').findOne({ _id: targetUserId });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: 'User not found or access denied.' });
+      return res.status(404).json({ message: 'User not found.' });
     }
 
     res.status(200).json(user);
@@ -61,7 +53,7 @@ export async function createUser(req, res) {
     const newUser = {
       name: req.body.name,
       email: req.body.email,
-      role: req.body.role,
+      role: req.body.role || 'customer',
       provider: req.body.provider,
       providerId: req.body.providerId,
     };
@@ -88,6 +80,7 @@ export async function updateUser(req, res) {
     }
 
     const db = getDb();
+    const targetUserId = new ObjectId(req.params.id);
 
     const updatedFields = {
       name: req.body.name,
@@ -100,8 +93,6 @@ export async function updateUser(req, res) {
       updatedFields.role = req.body.role;
     }
 
-    let filter = { _id: new ObjectId(req.params.id) };
-
     if (
       req.user?.role !== 'admin' &&
       req.user._id.toString() !== targetUserId.toString()
@@ -113,12 +104,10 @@ export async function updateUser(req, res) {
 
     const response = await db
       .collection('users')
-      .updateOne(filter, { $set: updatedFields });
+      .updateOne({ _id: targetUserId }, { $set: updatedFields });
 
     if (response.matchedCount === 0) {
-      return res
-        .status(404)
-        .json({ message: 'User not found or permission denied.' });
+      return res.status(404).json({ message: 'User not found.' });
     }
 
     res.status(204).send();
@@ -136,8 +125,6 @@ export async function deleteUser(req, res) {
     const db = getDb();
     const targetUserId = new ObjectId(req.params.id);
 
-    let filter = { _id: targetUserId };
-
     if (
       req.user?.role !== 'admin' &&
       req.user._id.toString() !== targetUserId.toString()
@@ -147,12 +134,14 @@ export async function deleteUser(req, res) {
       });
     }
 
-    const response = await db.collection('users').deleteOne(filter);
+    const response = await db
+      .collection('users')
+      .deleteOne({ _id: targetUserId });
 
     if (response.deletedCount > 0) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'User not found or permission denied.' });
+      res.status(404).json({ message: 'User not found.' });
     }
   } catch (error) {
     res.status(500).send(error.message);
