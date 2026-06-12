@@ -7,6 +7,9 @@ jest.mock('../middleware/authenticate.js', () => ({
     req.user = { _id: new ObjectId('60d5ec49f1b2c8a987654321'), role: 'admin' };
     next();
   },
+  isAdmin: (req, res, next) => {
+    next();
+  },
 }));
 
 import productsRoute from '../routes/products.js';
@@ -15,6 +18,7 @@ import usersRoute from '../routes/users.js';
 import reviewsRoute from '../routes/reviews.js';
 
 import { initDb, getDb, closeDb } from '../db/connect.js';
+import { isAdmin } from '../middleware/authenticate.js';
 
 const app = express();
 app.use(express.json());
@@ -57,7 +61,7 @@ describe('Get and GetAll Tests', () => {
       _id: reviewId,
       userId: userId,
       reviewerName: 'John Doe',
-      productName: 'Italy 2006 Home Kit',
+      productId: productId,
       rating: 5,
       comment: 'Absolutely amazing quality!',
       reviewDate: new Date().toISOString(),
@@ -127,13 +131,23 @@ describe('Get and GetAll Tests', () => {
       expect(Array.isArray(res.body)).toBeTruthy();
       expect(res.body.length).toBeGreaterThan(0);
       expect(res.body[0].reviewerName).toBe('John Doe');
-      expect(res.body[0].productName).toBe('Italy 2006 Home Kit');
+      expect(res.body[0].productId).toBe(productId.toString());
     });
 
     test('GET /reviews/:id - should return a single review', async () => {
       const res = await request(app).get(`/reviews/${reviewId.toString()}`);
       expect(res.status).toBe(200);
       expect(res.body.reviewerName).toBe('John Doe');
+    });
+
+    test('GET /reviews/product/:productId - should return all reviews for a specific product', async () => {
+      const res = await request(app).get(
+        `/reviews/product/${productId.toString()}`,
+      );
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBeTruthy();
+      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body[0].productId).toBe(productId.toString());
     });
   });
 });

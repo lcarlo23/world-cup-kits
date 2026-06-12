@@ -144,19 +144,11 @@ export function orderValidationRules() {
 
 export function reviewValidationRules() {
   return [
-    body('productName')
-      .trim()
+    body('productId')
       .notEmpty()
-      .withMessage('Product name is required')
-      .isLength({ min: 2 })
-      .withMessage('Product name must be at least 2 characters long'),
-
-    body('reviewerName')
-      .trim()
-      .notEmpty()
-      .withMessage('Reviewer name is required')
-      .isLength({ min: 2 })
-      .withMessage('Reviewer name must be at least 2 characters long'),
+      .withMessage('Product ID is required')
+      .isMongoId()
+      .withMessage('Invalid Product ID format'),
 
     body('rating')
       .notEmpty()
@@ -167,7 +159,7 @@ export function reviewValidationRules() {
     body('comment')
       .trim()
       .notEmpty()
-      .withMessage('Comment is required')
+      .withMessage('Comment cannot be empty')
       .isLength({ min: 5 })
       .withMessage('Comment must be at least 5 characters long'),
   ];

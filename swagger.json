@@ -354,6 +354,26 @@
           "500": { "description": "Internal Server Error" }
         }
       }
+    },
+    "/reviews/product/{productId}": {
+      "get": {
+        "tags": ["Reviews"],
+        "description": "Retrieves all reviews for a specific product by its product ID.",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The hexadecimal ID of the product"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "400": { "description": "Invalid Product ID format" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
     }
   },
   "definitions": {
@@ -419,11 +439,11 @@
     },
     "Review": {
       "type": "object",
-      "required": ["productName", "rating", "comment"],
+      "required": ["productId", "rating", "comment"],
       "properties": {
-        "productName": {
+        "productId": {
           "type": "string",
-          "example": "Italy Home Jersey 2006"
+          "example": "65f1a2b3c4d5e6f7a8b9c0d1"
         },
         "rating": { "type": "integer", "example": 5 },
         "comment": {
