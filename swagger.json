@@ -400,7 +400,6 @@
       "type": "object",
       "required": ["status", "items", "totalPrice"],
       "properties": {
-        "status": { "type": "string", "example": "pending" },
         "items": {
           "type": "array",
           "items": {

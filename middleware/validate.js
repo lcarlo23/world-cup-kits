@@ -95,13 +95,6 @@ export function userValidationRules() {
 
 export function orderValidationRules() {
   return [
-    body('customerName')
-      .trim()
-      .notEmpty()
-      .withMessage('Customer name is required')
-      .isLength({ min: 2 })
-      .withMessage('Customer name must be at least 2 characters long'),
-
     body('status')
       .optional()
       .trim()
@@ -120,15 +113,9 @@ export function orderValidationRules() {
       .isArray({ min: 1 })
       .withMessage('Items must be an array with at least one element'),
 
-    body('items.*.team')
-      .trim()
-      .notEmpty()
-      .withMessage('Team name is required'),
+    body('items.*.team').trim().notEmpty().withMessage('Team name is required'),
 
-    body('items.*.size')
-      .trim()
-      .notEmpty()
-      .withMessage('Size is required'),
+    body('items.*.size').trim().notEmpty().withMessage('Size is required'),
 
     body('items.*.jerseyName')
       .trim()
@@ -151,7 +138,7 @@ export function orderValidationRules() {
       .notEmpty()
       .withMessage('Quantity is required')
       .isInt({ min: 1 })
-      .withMessage('Quantity must be at least 1')
+      .withMessage('Quantity must be at least 1'),
   ];
 }
 
@@ -182,6 +169,6 @@ export function reviewValidationRules() {
       .notEmpty()
       .withMessage('Comment is required')
       .isLength({ min: 5 })
-      .withMessage('Comment must be at least 5 characters long')
+      .withMessage('Comment must be at least 5 characters long'),
   ];
 }

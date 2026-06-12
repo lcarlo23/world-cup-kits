@@ -10,12 +10,6 @@ import './config/passport.js';
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use((req, res, next) => {
-  console.log('incoming', req.method, req.originalUrl);
-  console.log('Cookies header', req.headers.cookies);
-  next();
-});
-
 app.use(
   cors({
     origin: process.env.HOST_URL,

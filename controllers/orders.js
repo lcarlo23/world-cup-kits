@@ -3,12 +3,17 @@ import { ObjectId } from 'mongodb';
 
 export async function getAllOrders(req, res) {
   try {
-    const db = getDb();
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to view orders.' });
+    }
 
+    const db = getDb();
     let query = {};
 
-    if (req.user?.role !== 'admin') {
-      query = { userId: req.user?._id };
+    if (req.user.role !== 'admin') {
+      query = { userId: req.user._id };
     }
 
     const orders = await db.collection('orders').find(query).toArray();
@@ -24,12 +29,17 @@ export async function getSingleOrder(req, res) {
       return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
-    const db = getDb();
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to view this order.' });
+    }
 
+    const db = getDb();
     let query = { _id: new ObjectId(req.params.id) };
 
-    if (req.user?.role !== 'admin') {
-      query.userId = req.user?._id;
+    if (req.user.role !== 'admin') {
+      query.userId = req.user._id;
     }
 
     const order = await db.collection('orders').findOne(query);
@@ -46,12 +56,20 @@ export async function getSingleOrder(req, res) {
 
 export async function createOrder(req, res) {
   try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to create an order.' });
+    }
+
     const db = getDb();
 
     const newOrder = {
       userId: req.user._id,
+      customerName: req.user.name,
       orderDate: new Date().toISOString(),
-      status: req.body.status || 'pending',
+      status:
+        req.user.role === 'admin' ? req.body.status || 'pending' : 'pending',
       items: req.body.items,
       totalPrice: req.body.totalPrice,
     };
@@ -77,28 +95,49 @@ export async function updateOrder(req, res) {
       return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
-    const db = getDb();
-    const orderId = req.params.id;
-
-    let query = { _id: new ObjectId(orderId) };
-
-    if (req.user?.role !== 'admin') {
-      query.userId = req.user?._id;
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to update orders.' });
     }
 
-    const updatedOrder = {
-      status: req.body.status,
-      items: req.body.items,
-      totalPrice: req.body.totalPrice,
-    };
+    const db = getDb();
+    const orderId = req.params.id;
+    let query = { _id: new ObjectId(orderId) };
+
+    if (req.user.role !== 'admin') {
+      query.userId = req.user._id;
+    }
+
+    const currentOrder = await db.collection('orders').findOne(query);
+    if (!currentOrder) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+
+    const updatedFields = {};
+
+    if (req.user.role === 'admin') {
+      if (req.body.status) updatedFields.status = req.body.status;
+      if (req.body.items) updatedFields.items = req.body.items;
+      if (req.body.totalPrice) updatedFields.totalPrice = req.body.totalPrice;
+    } else {
+      if (req.body.status === 'cancelled') {
+        if (currentOrder.status !== 'pending') {
+          return res.status(400).json({
+            message: 'You can only cancel orders that are still pending.',
+          });
+        }
+        updatedFields.status = 'cancelled';
+      } else {
+        return res.status(403).json({
+          message: 'Access denied. Customers can only cancel pending orders.',
+        });
+      }
+    }
 
     const response = await db
       .collection('orders')
-      .updateOne(query, { $set: updatedOrder });
-
-    if (response.matchedCount === 0) {
-      return res.status(404).json({ message: 'Order not found.' });
-    }
+      .updateOne(query, { $set: updatedFields });
 
     if (response.modifiedCount > 0) {
       res.status(204).send();
@@ -116,13 +155,21 @@ export async function deleteOrder(req, res) {
       return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to delete orders.' });
+    }
+
     const db = getDb();
     const orderId = req.params.id;
-
     let query = { _id: new ObjectId(orderId) };
 
-    if (req.user?.role !== 'admin') {
-      query.userId = req.user?._id;
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        message:
+          'Access denied. Only administrators can delete orders from database.',
+      });
     }
 
     const response = await db.collection('orders').deleteOne(query);
