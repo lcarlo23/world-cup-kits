@@ -17,9 +17,25 @@ export async function getSingleUser(req, res) {
       return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
-    const db = getDb();
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: 'You must login to get this profile.' });
+    }
 
-    let query = { _id: new ObjectId(req.params.id) };
+    const db = getDb();
+    const targetUserId = new ObjectId(req.params.id);
+
+    if (
+      req.user?.role !== 'admin' &&
+      req.user._id.toString() !== targetUserId.toString()
+    ) {
+      return res.status(403).json({
+        message: 'Access denied. You can only view your own profile.',
+      });
+    }
+
+    let query = { _id: targetUserId };
 
     if (req.user?.role !== 'admin') {
       query._id = req.user._id;

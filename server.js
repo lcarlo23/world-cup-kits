@@ -10,20 +10,36 @@ import './config/passport.js';
 const app = express();
 const port = process.env.PORT || 8080;
 
-app
-  .use(bodyParser.json())
-  .use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: true,
-    }),
-  )
-  .use(passport.initialize())
-  .use(passport.session())
-  .use(cors({ methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'] }))
-  .use(cors({ origin: '*' }))
-  .use('/', routes);
+app.use((req, res, next) => {
+  console.log('incoming', req.method, req.originalUrl);
+  console.log('Cookies header', req.headers.cookies);
+  next();
+});
+
+app.use(
+  cors({
+    origin: process.env.HOST_URL,
+    credentials: true,
+  }),
+);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    },
+  }),
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(bodyParser.json());
+
+app.use('/', routes);
 
 async function start() {
   try {
