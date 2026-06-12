@@ -102,8 +102,13 @@ export async function updateUser(req, res) {
 
     let filter = { _id: new ObjectId(req.params.id) };
 
-    if (req.user?.role !== 'admin') {
-      filter._id = req.user._id;
+    if (
+      req.user?.role !== 'admin' &&
+      req.user._id.toString() !== targetUserId.toString()
+    ) {
+      return res.status(403).json({
+        message: 'Access denied. You can only edit your own profile.',
+      });
     }
 
     const response = await db
@@ -133,8 +138,13 @@ export async function deleteUser(req, res) {
 
     let filter = { _id: targetUserId };
 
-    if (req.user?.role !== 'admin') {
-      filter._id = req.user._id;
+    if (
+      req.user?.role !== 'admin' &&
+      req.user._id.toString() !== targetUserId.toString()
+    ) {
+      return res.status(403).json({
+        message: 'Access denied. You can only delete your own profile.',
+      });
     }
 
     const response = await db.collection('users').deleteOne(filter);
