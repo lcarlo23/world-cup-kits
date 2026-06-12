@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { getDb } from '../db/connect.js';
+import { ObjectId } from 'mongodb';
 
 passport.use(
   new GitHubStrategy(
@@ -39,9 +40,17 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user._id);
 });
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
+passport.deserializeUser(async (id, done) => {
+  try {
+    const db = getDb();
+    const user = await db
+      .collection('users')
+      .findOne({ _id: new ObjectId(id) });
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
 });

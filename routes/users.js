@@ -10,15 +10,16 @@ import {
   userValidationRules,
   checkValidation,
 } from '../middleware/validate.js';
-import { isAuthenticated } from '../middleware/authenticate.js';
+import { isAdmin, isAuthenticated } from '../middleware/authenticate.js';
 
 const router = express.Router();
 
-router.get('/', getAllUsers);
-router.get('/:id', getSingleUser);
+router.get('/', isAuthenticated, isAdmin, getAllUsers);
+router.get('/:id', isAuthenticated, getSingleUser);
 router.post(
   '/',
   isAuthenticated,
+  isAdmin,
   userValidationRules(),
   checkValidation,
   createUser,

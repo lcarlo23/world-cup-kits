@@ -23,10 +23,8 @@ router.use(
   swaggerUi.setup(swaggerDocument, swaggerOptions),
 );
 
-router.get(
-  '/login',
-  passport.authenticate('github', () => {}),
-);
+router.get('/login', passport.authenticate('github'));
+
 router.get('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
@@ -36,9 +34,7 @@ router.get('/logout', (req, res, next) => {
 
 router.get('/', (req, res) => {
   res.send(
-    req.session.user !== undefined
-      ? `Logged in as ${req.session.user.name}`
-      : 'Logged Out',
+    req.user !== undefined ? `Logged in as ${req.user.name}` : 'Logged Out',
   );
 });
 
@@ -46,10 +42,8 @@ router.get(
   '/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/api-docs',
-    session: false,
   }),
   (req, res) => {
-    req.session.user = req.user;
     res.redirect('/');
   },
 );

@@ -10,15 +10,17 @@ import {
   productValidationRules,
   checkValidation,
 } from '../middleware/validate.js';
-import { isAuthenticated } from '../middleware/authenticate.js';
+import { isAdmin, isAuthenticated } from '../middleware/authenticate.js';
 
 const router = express.Router();
 
 router.get('/', getAllProducts);
 router.get('/:id', getSingleProduct);
+
 router.post(
   '/',
   isAuthenticated,
+  isAdmin,
   productValidationRules(),
   checkValidation,
   createProduct,
@@ -26,10 +28,11 @@ router.post(
 router.put(
   '/:id',
   isAuthenticated,
+  isAdmin,
   productValidationRules(),
   checkValidation,
   updateProduct,
 );
-router.delete('/:id', isAuthenticated, deleteProduct);
+router.delete('/:id', isAuthenticated, isAdmin, deleteProduct);
 
 export default router;
