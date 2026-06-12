@@ -4,7 +4,14 @@ import { ObjectId } from 'mongodb';
 export async function getAllOrders(req, res) {
   try {
     const db = getDb();
-    const orders = await db.collection('orders').find().toArray();
+
+    let query = {};
+
+    if (req.user?.role !== 'admin') {
+      query = { userId: req.user?._id };
+    }
+
+    const orders = await db.collection('orders').find(query).toArray();
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).send(error.message);
@@ -18,9 +25,14 @@ export async function getSingleOrder(req, res) {
     }
 
     const db = getDb();
-    const order = await db
-      .collection('orders')
-      .findOne({ _id: new ObjectId(req.params.id) });
+
+    let query = { _id: new ObjectId(req.params.id) };
+
+    if (req.user?.role !== 'admin') {
+      query.userId = req.user?._id;
+    }
+
+    const order = await db.collection('orders').findOne(query);
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found.' });
@@ -68,6 +80,12 @@ export async function updateOrder(req, res) {
     const db = getDb();
     const orderId = req.params.id;
 
+    let query = { _id: new ObjectId(orderId) };
+
+    if (req.user?.role !== 'admin') {
+      query.userId = req.user?._id;
+    }
+
     const updatedOrder = {
       status: req.body.status,
       items: req.body.items,
@@ -76,7 +94,7 @@ export async function updateOrder(req, res) {
 
     const response = await db
       .collection('orders')
-      .updateOne({ _id: new ObjectId(orderId) }, { $set: updatedOrder });
+      .updateOne(query, { $set: updatedOrder });
 
     if (response.matchedCount === 0) {
       return res.status(404).json({ message: 'Order not found.' });
@@ -101,9 +119,13 @@ export async function deleteOrder(req, res) {
     const db = getDb();
     const orderId = req.params.id;
 
-    const response = await db
-      .collection('orders')
-      .deleteOne({ _id: new ObjectId(orderId) });
+    let query = { _id: new ObjectId(orderId) };
+
+    if (req.user?.role !== 'admin') {
+      query.userId = req.user?._id;
+    }
+
+    const response = await db.collection('orders').deleteOne(query);
 
     if (response.deletedCount > 0) {
       res.status(204).send();

@@ -18,12 +18,19 @@ export async function getSingleUser(req, res) {
     }
 
     const db = getDb();
-    const user = await db
-      .collection('users')
-      .findOne({ _id: new ObjectId(req.params.id) });
+
+    let query = { _id: new ObjectId(req.params.id) };
+
+    if (req.user?.role !== 'admin') {
+      query._id = req.user._id;
+    }
+
+    const user = await db.collection('users').findOne(query);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res
+        .status(404)
+        .json({ message: 'User not found or access denied.' });
     }
 
     res.status(200).json(user);
@@ -65,29 +72,35 @@ export async function updateUser(req, res) {
     }
 
     const db = getDb();
-    const userId = new ObjectId(req.params.id);
 
-    const updatedUser = {
+    const updatedFields = {
       name: req.body.name,
       email: req.body.email,
-      role: req.body.role,
       provider: req.body.provider,
       providerId: req.body.providerId,
     };
 
+    if (req.user?.role === 'admin') {
+      updatedFields.role = req.body.role;
+    }
+
+    let filter = { _id: new ObjectId(req.params.id) };
+
+    if (req.user?.role !== 'admin') {
+      filter._id = req.user._id;
+    }
+
     const response = await db
       .collection('users')
-      .updateOne({ _id: userId }, { $set: updatedUser });
+      .updateOne(filter, { $set: updatedFields });
 
     if (response.matchedCount === 0) {
-      return res.status(404).json({ message: 'User not found.' });
+      return res
+        .status(404)
+        .json({ message: 'User not found or permission denied.' });
     }
 
-    if (response.modifiedCount > 0) {
-      res.status(204).send();
-    } else {
-      res.status(200).json({ message: 'No changes were made to the user.' });
-    }
+    res.status(204).send();
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -100,14 +113,20 @@ export async function deleteUser(req, res) {
     }
 
     const db = getDb();
-    const response = await db
-      .collection('users')
-      .deleteOne({ _id: new ObjectId(req.params.id) });
+    const targetUserId = new ObjectId(req.params.id);
+
+    let filter = { _id: targetUserId };
+
+    if (req.user?.role !== 'admin') {
+      filter._id = req.user._id;
+    }
+
+    const response = await db.collection('users').deleteOne(filter);
 
     if (response.deletedCount > 0) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'User not found.' });
+      res.status(404).json({ message: 'User not found or permission denied.' });
     }
   } catch (error) {
     res.status(500).send(error.message);

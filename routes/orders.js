@@ -14,8 +14,8 @@ import { isAuthenticated } from '../middleware/authenticate.js';
 
 const router = express.Router();
 
-router.get('/', getAllOrders);
-router.get('/:id', getSingleOrder);
+router.get('/', isAuthenticated, getAllOrders);
+router.get('/:id', isAuthenticated, getSingleOrder);
 router.post(
   '/',
   isAuthenticated,

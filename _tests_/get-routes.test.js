@@ -2,6 +2,13 @@ import request from 'supertest';
 import express from 'express';
 import { ObjectId } from 'mongodb';
 
+jest.mock('../middleware/authenticate.js', () => ({
+  isAuthenticated: (req, res, next) => {
+    req.user = { _id: new ObjectId('60d5ec49f1b2c8a987654321'), role: 'admin' };
+    next();
+  },
+}));
+
 import productsRoute from '../routes/products.js';
 import ordersRoute from '../routes/orders.js';
 import usersRoute from '../routes/users.js';
@@ -18,7 +25,7 @@ app.use('/reviews', reviewsRoute);
 
 const productId = new ObjectId();
 const orderId = new ObjectId();
-const userId = new ObjectId();
+const userId = new ObjectId('60d5ec49f1b2c8a987654321');
 const reviewId = new ObjectId();
 
 describe('Get and GetAll Tests', () => {
@@ -34,25 +41,26 @@ describe('Get and GetAll Tests', () => {
       price: 89.99,
     });
 
-    await db.collection('orders').insertOne({
-      _id: orderId,
-      customerName: 'Mario Rossi',
-      totalPrice: 89.99,
-    });
-
     await db.collection('users').insertOne({
       _id: userId,
       name: 'Luigi',
-      email: 'luigi@example.com',
+      email: 'luigi@test.com',
+    });
+
+    await db.collection('orders').insertOne({
+      _id: orderId,
+      userId: userId,
+      totalPrice: 89.99,
     });
 
     await db.collection('reviews').insertOne({
       _id: reviewId,
-      productName: 'Italy Home Jersey 2006',
+      userId: userId,
       reviewerName: 'John Doe',
+      productName: 'Italy 2006 Home Kit',
       rating: 5,
-      comment: 'The stitch quality is incredible. Highly recommend!',
-      reviewDate: '2026-06-10',
+      comment: 'Absolutely amazing quality!',
+      reviewDate: new Date().toISOString(),
     });
   });
 
@@ -84,13 +92,13 @@ describe('Get and GetAll Tests', () => {
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBeTruthy();
       expect(res.body.length).toBeGreaterThan(0);
-      expect(res.body[0].customerName).toBe('Mario Rossi');
+      expect(res.body[0].totalPrice).toBe(89.99);
     });
 
     test('GET /orders/:id - should return a single order', async () => {
       const res = await request(app).get(`/orders/${orderId.toString()}`);
       expect(res.status).toBe(200);
-      expect(res.body.customerName).toBe('Mario Rossi');
+      expect(res.body.totalPrice).toBe(89.99);
     });
   });
 
@@ -119,13 +127,13 @@ describe('Get and GetAll Tests', () => {
       expect(Array.isArray(res.body)).toBeTruthy();
       expect(res.body.length).toBeGreaterThan(0);
       expect(res.body[0].reviewerName).toBe('John Doe');
+      expect(res.body[0].productName).toBe('Italy 2006 Home Kit');
     });
 
     test('GET /reviews/:id - should return a single review', async () => {
       const res = await request(app).get(`/reviews/${reviewId.toString()}`);
       expect(res.status).toBe(200);
       expect(res.body.reviewerName).toBe('John Doe');
-      expect(res.body.productName).toBe('Italy Home Jersey 2006');
     });
   });
 });
