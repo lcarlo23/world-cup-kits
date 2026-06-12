@@ -10,6 +10,8 @@ import './config/passport.js';
 const app = express();
 const port = process.env.PORT || 8080;
 
+app.set('trust proxy', 1);
+
 app.use(
   cors({
     origin: process.env.HOST_URL,
